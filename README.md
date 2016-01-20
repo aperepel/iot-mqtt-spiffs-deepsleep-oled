@@ -1,49 +1,20 @@
 # Overview
-A base IoT template for ESP8266-based WiFi boards.
-* On startup, it enters the SmartConfig mode and
-awaits for WiFi credentials to be provided (the easiest is to use your smartphone on the same network). There
-are alternative, less robust methods, but not covered here.
-* Once it gets WiFi credentials, it connects to the configured network
-* Everything is accompanied by OLED prompts and debug info on UART/Serial.
-* After connection is established, the board's IP is printed.
-* The board turns off the OLED display
-* Press the button once - it flashes the logo and prints the IP address. Turns off the display again.
-* Hold the button for 5 seconds - wipes out WiFi credentials and goes into the SmartConfig mode (e.g.
-  when you need to connect to a different WiFi network.)
+This is an evolution of the https://github.com/aperepel/iot-esp8266-starter project. Changelog:
 
-# Show Me!
-[![IMAGE ALT TEXT](https://i.ytimg.com/vi/mdC_2jkhn_g/2.jpg?time=1452273766992)](https://www.youtube.com/watch?v=mdC_2jkhn_g "IoT ESP8266 SSD1306 OLED SmartConfig Starter in 4K")
+* Added an MQTT support. Demo of an online/offline pattern with LWT and Retain messages. Send a message to show on a display.
+* Externalized a number of configuration properties in a JSON file (MQTT broker, topic names, etc.). Hosted on ESP8266 SPIFFS file system.
+* TODO - demo of how to create and upload a FS firmware image with PlatformIO
+* More robust WiFi lifecycle. Moved connection logic from `setup()` to a `loop()`. If an access point is no longer available, wipe the credentials and transition into a SmartConfig mode after 30 seconds (TODO - make it configurable via the same `/data/config.json`?)
+* The button now displays basic info and puts the system in `Deep Sleep` mode for 5 minutes (TODO - make this configurable too.) Upon awakening, reconnects to the MQTT broker.
+* Updated wiring to support deep sleep - added a jumper between `D0` and `RST` pin)
 
-Note: the wiring and code were updated since the video was shot (SDA pin moved from D2 to D7) - current version won't flash the LED on every RX/TX.
-
-# Why?
-Over time I recognized repeatable patterns and best practices I followed for my projects and wanted to
-capture those as a starter project. E.g. if you're interested in a connected device which goes beyond
-blinking an LED and take provisioning/deployment/security and operations seriously.
-
-From this state, use your favorite MQTT library, host the WebServer, POST JSON to your REST API endpoint, etc.
-All while interacting with the whole gamut of sensors, the usual Arduino way.
-
-# TBD
-* more efficient sleep for when running on battery (currently draws ~20mA in always-on mode)
-* ~~Fritzing wiring diagram (if it has esp8266 components or similar?)~~ http://fritzing.org/projects/iot-esp8266-ssd1306-oled-starter
-* A video demonstrating the flow
-
-# Components
-* Any ESP8266/esp12e/NodeMCU (no Lua, only using native Arduino/C++ code) - https://github.com/esp8266/esp8266-wiki/wiki
-* SSD_1306 128x64 OLED display in I2C mode (not SPI)
-* A push button + a 10K resistor to control display and force WiFi credential resets
-* ESP8266 SmartConfig Android app: https://play.google.com/store/apps/details?id=com.cmmakerclub.iot.esptouch .
-  Used to perform initial WiFi setup and provide credentials to the board. *no passwords are hardcoded
-  in the source code*.
-* For iOS users (I haven't tried it, but..) https://github.com/EspressifApp/EsptouchForIOS
-* http://www.platformio.org (seriously, save yourself some trouble and start using it today)
-
-# Building
+# Building the Code
 ```
 # serial port monitor part is optional, but nice
 platformio run -t upload && platformio serialports monitor --baud 115200
 ```
+# Building the File System
+TODO add instructions
 
 # IDE Support
 Really, any IDE which PlatformIO supports will do (which in practice means everything.)
