@@ -1,0 +1,5 @@
+{
+  "mqtt_server": "broker.hivemq.com",
+  "status_topic": "iot/hwx/device123/status",
+  "motd_topic": "iot/hwx/device123/motd"
+}
